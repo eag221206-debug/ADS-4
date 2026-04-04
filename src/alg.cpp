@@ -1,7 +1,40 @@
 // Copyright 2021 NNTU-CS
+
+int countEqualInRange(int *arr, int L, int R, int target) {
+    if (L > R) return 0;
+
+    // Первый индекс >= target
+    int left = L, right = R, first = -1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (arr[mid] >= target) {
+            first = mid;
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    if (first == -1 || arr[first] != target) return 0;
+
+    // Первый индекс > target
+    left = first;
+    right = R;
+    int last = -1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (arr[mid] > target) {
+            last = mid;
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    int upper = (last == -1 ? R + 1 : last);
+    return upper - first;
+}
+
 int countPairs1(int *arr, int len, int value) {
     int count = 0;
-    
     for (int i = 0; i < len; i++) {
         for (int j = i + 1; j < len; j++) {
             if (arr[i] + arr[j] == value) {
@@ -9,44 +42,45 @@ int countPairs1(int *arr, int len, int value) {
             }
         }
     }
-    
     return count;
 }
 
 int countPairs2(int *arr, int len, int value) {
     int count = 0;
+    for (int i = 0; i < len; i++) {
+        int target = value - arr[i];
+        count += countEqualInRange(arr, i + 1, len - 1, target);
+    }
+    return count;
+}
+
+int countPairs3(int *arr, int len, int value) {
+  int count = 0;
     int left = 0;
     int right = len - 1;
-    
     while (left < right) {
         int sum = arr[left] + arr[right];
-        
         if (sum == value) {
-            int leftVal = arr[left];
-            int rightVal = arr[right];
-            
-            if (leftVal == rightVal) {
-                int n = right - left + 1;
-                count += n * (n - 1) / 2;
+            int l_val = arr[left];
+            int r_val = arr[right];
+            if (l_val == r_val) {
+                int num = right - left + 1;
+                count += num * (num - 1) / 2;
                 break;
             } else {
-                int leftCount = 0;
-                int tempLeft = left;
-                while (tempLeft <= right && arr[tempLeft] == leftVal) {
-                    leftCount++;
-                    tempLeft++;
+                int l_count = 0;
+                while (left < right && arr[left] == l_val) {
+                    l_count++;
+                    left++;
                 }
-                
-                int rightCount = 0;
-                int tempRight = right;
-                while (tempRight >= left && arr[tempRight] == rightVal) {
-                    rightCount++;
-                    tempRight--;
+                int r_count = 0;
+                int r_idx = right;
+                while (r_idx >= left && arr[r_idx] == r_val) {
+                    r_count++;
+                    r_idx--;
                 }
-                
-                count += leftCount * rightCount;
-                left = tempLeft;
-                right = tempRight;
+                count += l_count * r_count;
+                right = r_idx;
             }
         } else if (sum < value) {
             left++;
@@ -54,57 +88,5 @@ int countPairs2(int *arr, int len, int value) {
             right--;
         }
     }
-    
     return count;
 }
-
-int binarySearchCount(int *arr, int start, int end, int target) {
-    if (start > end) return 0;
-    
-    int first = -1;
-    int left = start, right = end;
-    
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (arr[mid] >= target) {
-            if (arr[mid] == target) first = mid;
-            right = mid - 1;
-        } else {
-            left = mid + 1;
-        }
-    }
-    
-    if (first == -1) return 0;
-    
-    int last = -1;
-    left = start;
-    right = end;
-    
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (arr[mid] <= target) {
-            if (arr[mid] == target) last = mid;
-            left = mid + 1;
-        } else {
-            right = mid - 1;
-        }
-    }
-    
-    return last - first + 1;
-}
-
-int countPairs3(int *arr, int len, int value) {
-    int count = 0;
-    
-    for (int i = 0; i < len; i++) {
-        int target = value - arr[i];
-        
-        if (target >= 0) {
-            int foundCount = binarySearchCount(arr, i + 1, len - 1, target);
-            count += foundCount;
-        }
-    }
-    
-    return count;
-}
-```
