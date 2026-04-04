@@ -3,7 +3,6 @@
 int countEqualInRange(int *arr, int L, int R, int target) {
     if (L > R) return 0;
 
-    // Первый индекс >= target
     int left = L, right = R, first = -1;
     while (left <= right) {
         int mid = left + (right - left) / 2;
@@ -16,7 +15,6 @@ int countEqualInRange(int *arr, int L, int R, int target) {
     }
     if (first == -1 || arr[first] != target) return 0;
 
-    // Первый индекс > target
     left = first;
     right = R;
     int last = -1;
