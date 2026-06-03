@@ -69,7 +69,7 @@ int countPairs3(int *arr, int len, int value) {
         count += left_count * right_count;
       } else {
         int n = right - left + 1;
-        count += (int64_t)n * (n - 1) / 2;
+        count += static_cast<int64_t>(n) * (n - 1) / 2;
         break;
       }
     }
