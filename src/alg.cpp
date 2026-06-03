@@ -1,7 +1,7 @@
 // Copyright 2021 NNTU-CS
-
 #include <algorithm>
 #include <iterator>
+#include <cstdint>
 
 int countPairs1(int *arr, int len, int value) {
   int count = 0;
@@ -18,6 +18,28 @@ int countPairs1(int *arr, int len, int value) {
 }
 
 int countPairs2(int *arr, int len, int value) {
+  int64_t count = 0;
+  for (int i = 0; i < len; ++i) {
+    int target = value - arr[i];
+
+    if (target < arr[i]) {
+      break;
+    }
+
+    auto low = std::lower_bound(arr + i + 1, arr + len, target);
+
+    if (low == arr + len || *low != target) {
+      continue;
+    }
+
+    auto high = std::upper_bound(low, arr + len, target);
+
+    count += std::distance(low, high);
+  }
+  return count;
+}
+
+int countPairs3(int *arr, int len, int value) {
   int count = 0;
   int left = 0;
   int right = len - 1;
@@ -47,33 +69,10 @@ int countPairs2(int *arr, int len, int value) {
         count += left_count * right_count;
       } else {
         int n = right - left + 1;
-        count += (long long)n * (n - 1) / 2;
+        count += (int64_t)n * (n - 1) / 2;
         break;
       }
     }
-  }
-  return count;
-}
-
-int countPairs3(int *arr, int len, int value) {
-  long long count = 0;
-
-  for (int i = 0; i < len; ++i) {
-    int target = value - arr[i];
-    
-    if (target < arr[i]) {
-      break;
-    }
-
-    auto low = std::lower_bound(arr + i + 1, arr + len, target);
-
-    if (low == arr + len || *low != target) {
-      continue;
-    }
-
-    auto high = std::upper_bound(low, arr + len, target);
-
-    count += std::distance(low, high);
   }
   return count;
 }
